@@ -1,4 +1,4 @@
-package com.example.fish.cloudinteractiveinterview.http;
+package com.example.fish.cloudinteractiveinterview.http.Retrofit;
 
 public class ApiResponse<T> {
     private int syscode;

@@ -2,12 +2,18 @@ package com.example.fish.cloudinteractiveinterview.architecture;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
+
+import com.example.fish.cloudinteractiveinterview.R;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -20,6 +26,8 @@ public abstract class BaseActivity<P extends BaseIPresenter> extends AppCompatAc
     protected abstract P getPresenter();
 
     protected abstract int getViewLayout();
+
+    protected abstract int getContainerViewId();
 
     protected abstract void initView();
 
@@ -97,6 +105,22 @@ public abstract class BaseActivity<P extends BaseIPresenter> extends AppCompatAc
 
     protected <V extends View> V findView(int id){
         return (V)findViewById(id);
+    }
+
+    //替換Fragment
+    @Override
+    public void replaceFragment(Fragment changeFragment) {
+        hideSoftKeyBoard();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            fragmentTransaction.setCustomAnimations(
+                    R.anim.slide_in_from_right, R.anim.slide_out_left,
+                    R.anim.slide_in_from_left, R.anim.slide_out_right);
+        }
+        fragmentTransaction.replace(getContainerViewId(), changeFragment);
+        fragmentTransaction.addToBackStack(changeFragment.getClass().getSimpleName());
+        fragmentTransaction.commitAllowingStateLoss();
     }
 
     private void releasePresenter() {
